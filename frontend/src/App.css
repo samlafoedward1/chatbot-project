@@ -32,7 +32,7 @@ body {
   left: 0;
   width: 100%;
   height: 50px;
-  background-color: #4a4a4a; /* Plain dark color */
+  background-color: #4a4a4a;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -47,11 +47,22 @@ body {
   border: none;
   font-size: 16px;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .topbar-btn:hover {
-  color: #ddd;
+  background-color: #a8e76c;
+  color: white;
+}
+
+.topbar-btn:active {
+  background-color: #6c9d47;
+  color: white;
+}
+
+.topbar-btn:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .dark-mode .topbar {
@@ -121,7 +132,7 @@ body {
 }
 
 .chat-message.user {
-  background-color: #007bff;
+  background-color: #7ea856;
   color: white;
   align-self: flex-end;
   text-align: right;
@@ -156,7 +167,7 @@ body {
 .chat-input button {
   padding: 10px 15px;
   border-radius: 20px;
-  background-color: #007bff;
+  background-color: #7ea856;
   color: white;
   border: none;
   cursor: pointer;
@@ -164,7 +175,7 @@ body {
 }
 
 .chat-input button:hover {
-  background-color: #0056b3;
+  background-color: #a8e76c;
 }
 
 /* Mobile Responsive */
@@ -229,7 +240,7 @@ body {
 }
 
 .study-planner-container button {
-  background-color: #007bff;
+  background-color: #7ea856;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -239,7 +250,7 @@ body {
 }
 
 .study-planner-container button:hover {
-  background-color: #0056b3;
+  background-color: #acec70;
 }
 
 /* Study Session List */
@@ -283,7 +294,6 @@ body {
   color: #ddd;
 }
 
-/* Add this to your existing CSS */
 .chat-container.hidden,
 .study-planner-container.hidden {
   opacity: 0;

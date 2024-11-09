@@ -81,7 +81,7 @@ function StudyPlanner() {
 
       {/* Display the list of study sessions */}
       <div className="study-session-list">
-        <h3>Upcoming Study Sessions</h3>
+        <h2>Upcoming Study Sessions</h2>
         {renderStudySessions()}
       </div>
     </div>
