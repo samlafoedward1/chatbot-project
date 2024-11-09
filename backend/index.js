@@ -10,7 +10,9 @@ let conversationState = {
   lastIntent: null,
   history: [],
   misunderstandCount: 0,
-  studyPlanStep: 0, // Track steps in the study plan
+  studyPlanStep: 0,
+  awaitingYesNo: false, // Track if bot is waiting for Yes/No response
+  awaitingContext: "", // Track the context for Yes/No (like "study plan")
 };
 
 // Define possible intents and related keywords
@@ -152,17 +154,22 @@ const responses = {
     "It seems I'm struggling to understand. Let’s start over. What would you like help with?",
 };
 
+// Process incoming messages
 function processUserMessage(msg) {
-  // Check for a hard fallback if misunderstandCount reaches 3
-  if (conversationState.misunderstandCount >= 3) {
-    conversationState.history = [];
-    conversationState.misunderstandCount = 0;
-    conversationState.lastIntent = null;
-    conversationState.studyPlanStep = 0;
-    return responses.hardFallback;
+  // If bot is awaiting Yes/No response, handle accordingly
+  if (conversationState.awaitingYesNo) {
+    if (msg.toLowerCase() === "yes") {
+      conversationState.awaitingYesNo = false; // Reset awaiting state
+      return continueStudyPlan();
+    } else if (msg.toLowerCase() === "no") {
+      conversationState.awaitingYesNo = false; // Reset awaiting state
+      return "Alright, feel free to ask anytime if you change your mind!";
+    } else {
+      return responses.softFallback; // Handle invalid "yes" or "no" responses
+    }
   }
 
-  // Determine the user's intent
+  // Detect the user's intent based on the message
   let intentDetected = null;
   for (let intent in intents) {
     if (
@@ -173,45 +180,57 @@ function processUserMessage(msg) {
     }
   }
 
-  // Handle the study plan multi-step conversation
+  // Handle study plan flow
   if (
     intentDetected === "studyPlan" &&
     conversationState.lastIntent !== "studyPlan"
   ) {
-    // Starting the study plan flow
     conversationState.lastIntent = "studyPlan";
     conversationState.studyPlanStep = 1; // Set the first step
     return responses.studyPlan[0];
   } else if (conversationState.lastIntent === "studyPlan") {
-    // Continue study plan steps based on the current step
-    const response = responses.studyPlan[conversationState.studyPlanStep];
-    conversationState.studyPlanStep =
-      (conversationState.studyPlanStep + 1) % responses.studyPlan.length;
-    return response;
+    return continueStudyPlan();
   }
 
-  // Reset misunderstand count if intent is detected
+  // If intent is detected, provide appropriate response
   if (intentDetected) {
     conversationState.misunderstandCount = 0;
     conversationState.lastIntent = intentDetected;
-    return responses[intentDetected][
-      Math.floor(Math.random() * responses[intentDetected].length)
-    ];
+    conversationState.history.push({
+      sender: "bot",
+      text: responses[intentDetected][
+        Math.floor(Math.random() * responses[intentDetected].length)
+      ],
+    });
+    return conversationState.history[conversationState.history.length - 1].text;
   } else {
-    // Increment misunderstand count and return soft fallback if intent not detected
+    // Increase misunderstand count if no intent is detected
     conversationState.misunderstandCount += 1;
     return responses.softFallback;
   }
 }
 
-// Handle socket connections and message exchanges
+// Continue study plan flow
+function continueStudyPlan() {
+  const response = responses.studyPlan[conversationState.studyPlanStep];
+  conversationState.studyPlanStep += 1;
+
+  // Check if there are more steps or ask for confirmation
+  if (conversationState.studyPlanStep >= responses.studyPlan.length) {
+    conversationState.awaitingYesNo = true; // Wait for Yes/No response
+    return "Would you like to proceed with the study plan? (Yes/No)";
+  }
+
+  return response;
+}
+
+// Handle socket connections
 io.on("connection", (socket) => {
   console.log("User connected");
 
-  // Handle incoming user messages
   socket.on("userMessage", (msg) => {
-    const botResponse = processUserMessage(msg);
-    socket.emit("botMessage", botResponse);
+    const botMessage = processUserMessage(msg);
+    socket.emit("botMessage", botMessage);
   });
 
   socket.on("disconnect", () => {
@@ -220,5 +239,6 @@ io.on("connection", (socket) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(3001, () => {
+  console.log("Server running on port 3001");
+});
