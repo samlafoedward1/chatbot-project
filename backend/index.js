@@ -13,8 +13,17 @@ let conversationState = {
 };
 
 // Define possible intents and related keywords
-// Expanded keywords and responses
 const intents = {
+  greeting: [
+    "hello",
+    "hi",
+    "hey",
+    "greetings",
+    "what's up",
+    "good morning",
+    "good afternoon",
+    "good evening",
+  ],
   studyHelp: [
     "study",
     "focus",
@@ -81,6 +90,13 @@ const intents = {
 
 // Expanded responses for each intent
 const responses = {
+  greeting: [
+    "Hello! How can I help you with your studies today?",
+    "Hi there! Ready to get some work done?",
+    "Hey! What study goals can I help you achieve today?",
+    "Hello! Need motivation, study tips, or anything else?",
+    "Hi! I’m here to support you in reaching your study goals.",
+  ],
   studyHelp: [
     "Try summarizing your notes and reviewing them at regular intervals. It helps with retention.",
     "Break down complex topics into smaller parts. Master each part before moving to the next.",
