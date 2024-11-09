@@ -1,19 +1,19 @@
-// frontend/src/App.js
-
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { FaSun, FaMoon } from "react-icons/fa";
+import { Button } from "react-bootstrap";
 import io from "socket.io-client";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css"; // Custom styles can be adjusted here
+import "./App.css";
 
-// Connect to the backend (adjust the port if your backend runs on a different one)
+// Socket connection
 const socket = io("http://localhost:3001");
 
 function App() {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
-  const chatEndRef = useRef(null); // Ref to scroll to the bottom of the chat
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Listen for messages from the bot
+  // Handle incoming bot messages
   useEffect(() => {
     socket.on("botMessage", (botMessage) => {
       setChatHistory((prevHistory) => [
@@ -22,15 +22,11 @@ function App() {
       ]);
     });
 
+    // Clean up the effect
     return () => socket.off("botMessage");
   }, []);
 
-  // Auto-scroll to the latest message whenever the chat history changes
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatHistory]);
-
-  // Handle sending a message
+  // Send message to bot
   const sendMessage = () => {
     if (message.trim()) {
       setChatHistory((prevHistory) => [
@@ -47,43 +43,47 @@ function App() {
     if (e.key === "Enter") sendMessage();
   };
 
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
   return (
-    <div className="App container mt-5">
-      <h1 className="text-center mb-4">Study Buddy Chatbot</h1>
-      <div className="chat-window card shadow-lg">
-        <div
-          className="chat-history card-body overflow-auto"
-          style={{ height: "400px" }}
-        >
-          {chatHistory.map((msg, index) => (
-            <div
-              key={index}
-              className={`chat-message ${msg.sender} mb-2 p-2 rounded`}
-              style={{
-                backgroundColor: msg.sender === "bot" ? "#f1f1f1" : "#d1f1d1",
-              }}
-            >
-              <span className="font-weight-bold">
-                {msg.sender === "user" ? "You" : "Bot"}:
-              </span>{" "}
-              {msg.text}
-            </div>
-          ))}
-          {/* Add an empty div to scroll into view */}
-          <div ref={chatEndRef} />
-        </div>
-        <div className="chat-input card-footer d-flex align-items-center">
-          <input
-            type="text"
-            className="form-control mr-2"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-          />
-          <button className="btn btn-primary" onClick={sendMessage}>
-            Send
-          </button>
+    <div className={`app ${isDarkMode ? "dark-mode" : ""}`}>
+      <div className="navbar">
+        <Button onClick={toggleDarkMode} className="dark-mode-btn">
+          {isDarkMode ? <FaSun /> : <FaMoon />} Toggle Dark Mode
+        </Button>
+        <Button variant="link" className="study-plans-btn">
+          Study Plans
+        </Button>
+      </div>
+
+      <div className="chat-container">
+        <div className="chat-window">
+          <h1>Study Buddy Chatbot</h1>
+          <div className="chat-history">
+            {chatHistory.map((msg, index) => (
+              <div
+                key={index}
+                className={`chat-message ${
+                  msg.sender === "user" ? "user" : "bot"
+                }`}
+              >
+                {msg.text}
+              </div>
+            ))}
+          </div>
+          <div className="chat-input">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type your message..."
+            />
+            <button onClick={sendMessage}>Send</button>
+          </div>
         </div>
       </div>
     </div>

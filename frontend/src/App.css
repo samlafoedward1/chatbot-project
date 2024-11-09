@@ -1,78 +1,198 @@
-/* frontend/src/App.css */
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-.App {
+body {
+  font-family: "Arial", sans-serif;
+  background-image: url("../public/study.jpg"); /* Replace with your image path */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  font-family: Arial, sans-serif;
+  overflow: hidden;
 }
 
-.chat-window {
-  width: 80%;
-  max-width: 600px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
+/* Navbar Styles */
+.navbar {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.7); /* Transparent dark navbar */
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  z-index: 1000;
 }
 
-.chat-history {
-  padding: 20px;
-  height: 400px;
-  overflow-y: scroll;
-  background-color: #f9f9f9;
-}
-
-.chat-message {
+.navbar .dark-mode-btn {
   margin-bottom: 10px;
 }
 
-.chat-message.user {
-  text-align: right;
-  color: #007bff;
+.navbar .study-plans-btn {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
+.navbar .study-plans-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Chat Container */
+.chat-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 85%; /* Chat window takes 85% of the screen width */
+  height: 80vh;
+  position: relative;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.2
+  ); /* Light transparency for chat background */
+  border-radius: 10px;
+  flex-direction: column; /* Stack chat messages in column */
+  overflow: hidden;
+  margin-left: 250px; /* Offset by the width of the navbar */
+  padding: 20px;
+}
+
+/* Chat Window */
+.chat-window {
+  width: 100%; /* Take full width of the chat container */
+  padding: 20px;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.8
+  ); /* Default transparent chat window */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start; /* Position chat messages from the top */
+  overflow-y: auto; /* Allow scrolling for overflowing messages */
+}
+
+/* Dark Mode - Chat Window Only */
+.chat-window.dark-mode {
+  background-color: rgba(0, 0, 0, 0.8); /* Darker transparent chat window */
+}
+
+/* Chat History */
+.chat-history {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding-right: 10px;
+  height: 70%; /* Control the height of the chat history */
+}
+
+/* Chat Message Bubbles */
+.chat-message {
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 20px;
+  background-color: #f1f1f1;
+  word-wrap: break-word;
+  display: block; /* Ensure each bubble starts on a new line */
+  width: fit-content; /* Adjust bubble width based on content */
+  max-width: 70%; /* Max width to prevent overflow */
+  position: relative;
+}
+
+/* User's Message */
+.chat-message.user {
+  background-color: #4a90e2;
+  color: white;
+  align-self: flex-end; /* Align user messages to the right */
+}
+
+/* Bot's Message */
 .chat-message.bot {
-  text-align: left;
+  background-color: #e5e5e5;
+  color: black;
+  align-self: flex-start; /* Align bot messages to the left */
+}
+
+/* Name in the Bubble */
+.chat-message .message-name {
+  font-size: 12px;
+  font-weight: bold;
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
   color: #333;
 }
 
+/* Chat Input Area */
 .chat-input {
   display: flex;
-  border-top: 1px solid #ccc;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
 }
 
 .chat-input input {
-  flex: 1;
+  width: 80%;
   padding: 10px;
-  border: none;
+  border-radius: 20px;
+  border: 1px solid #ddd;
   outline: none;
   font-size: 16px;
 }
 
 .chat-input button {
-  padding: 10px;
+  padding: 10px 20px;
+  border-radius: 20px;
   background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
 }
 
 .chat-input button:hover {
   background-color: #0056b3;
 }
-.container {
-  max-width: 600px;
-}
 
-.chat-box {
-  height: 70vh;
-  margin-top: 20px;
-  padding: 10px;
-  overflow-y: scroll;
-}
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .chat-container {
+    width: 90%; /* Chat area takes up 90% of the screen on smaller screens */
+    margin-left: 0; /* Remove navbar space on small screens */
+  }
 
-.msg-bubble {
-  max-width: 75%;
+  .navbar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .chat-input input {
+    width: 70%;
+  }
+
+  .chat-input button {
+    width: 25%;
+  }
 }
