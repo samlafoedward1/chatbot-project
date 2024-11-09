@@ -62,3 +62,17 @@
 .chat-input button:hover {
   background-color: #0056b3;
 }
+.container {
+  max-width: 600px;
+}
+
+.chat-box {
+  height: 70vh;
+  margin-top: 20px;
+  padding: 10px;
+  overflow-y: scroll;
+}
+
+.msg-bubble {
+  max-width: 75%;
+}

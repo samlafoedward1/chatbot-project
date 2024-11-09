@@ -10,6 +10,7 @@ let conversationState = {
   lastIntent: null,
   history: [],
   misunderstandCount: 0,
+  studyPlanStep: 0, // Track steps in the study plan
 };
 
 // Define possible intents and related keywords
@@ -35,6 +36,7 @@ const intents = {
     "recall",
     "notes",
   ],
+  studyPlan: ["study plan", "schedule", "plan my studies"],
   motivation: [
     "motivate",
     "motivation",
@@ -98,46 +100,51 @@ const responses = {
     "Hi! I’m here to support you in reaching your study goals.",
   ],
   studyHelp: [
-    "Try summarizing your notes and reviewing them at regular intervals. It helps with retention.",
-    "Break down complex topics into smaller parts. Master each part before moving to the next.",
-    "Use flashcards to memorize key points, and quiz yourself regularly.",
-    "Find a study buddy! Explaining concepts to others is a great way to reinforce your own understanding.",
-    "Switch study locations to keep your mind engaged – but avoid noisy places if they’re distracting.",
+    "Have you tried summarizing your notes? It can really help with retention. Would you like more tips on effective study habits?",
+    "Breaking down complex topics can make studying easier. Need some techniques on organizing your study sessions?",
+    "Flashcards are great for memorizing key points. Would you like me to suggest a few more methods to memorize better?",
+    "How’s your study environment? Sometimes, adjusting it can improve focus. Want to know more on this?",
+    "Learning with a study buddy can be really effective. Do you want more tips on studying in groups?",
   ],
   motivation: [
-    "Remember why you started! Visualize your goal and keep pushing forward.",
-    "Set small, achievable goals to maintain motivation. Reward yourself for completing each one.",
-    "Surround yourself with supportive people who encourage your growth.",
-    "Stay positive, even when things get tough. Progress is progress, no matter how small.",
-    "Keep a journal to track your accomplishments – it’ll remind you of how far you’ve come.",
+    "Remember why you started! Visualize your goal and keep pushing forward. Would you like a few words of encouragement?",
+    "Set small, achievable goals and reward yourself. Need help breaking down your study goals?",
+    "Surround yourself with supportive people. Need tips on keeping a positive mindset?",
+    "Stay positive, even when things get tough. How about some advice on staying resilient?",
+    "Journaling can help track accomplishments. Do you want to hear more about reflection techniques?",
   ],
   productivity: [
-    "Make a to-do list and prioritize your tasks. Focus on the most important ones first.",
-    "Try the 2-Minute Rule: if a task takes less than 2 minutes, do it immediately.",
-    "Set up a study schedule and follow it strictly. Consistency is key!",
-    "Limit distractions – turn off notifications and create a dedicated study space.",
-    "Break big projects into smaller steps and tackle them one by one to avoid feeling overwhelmed.",
+    "Make a to-do list and prioritize tasks. Would you like advice on structuring your list?",
+    "Set aside distraction-free blocks of time. Need some pointers on reducing distractions?",
+    "Consistency is key! Want some more ideas on building productive habits?",
+    "Try using a planner. Do you want to know how to organize your study sessions better?",
+    "Break projects into small steps. Need help creating a manageable study schedule?",
   ],
   wellness: [
-    "Don’t forget to take regular breaks! Short breaks every hour can keep your mind fresh.",
-    "Stay hydrated and eat nutritious snacks to fuel your brain during study sessions.",
-    "Consider doing a short meditation or breathing exercise to reduce stress.",
-    "Sleep is crucial for memory – aim for at least 7-8 hours to keep your mind sharp.",
-    "A bit of exercise, like a quick walk, can help you stay focused and energized.",
+    "Don’t forget to take regular breaks! Would you like ideas on balancing study and self-care?",
+    "Stay hydrated! It’s a small thing that makes a big difference. Want some tips on energizing study snacks?",
+    "A quick meditation can reduce stress. Interested in relaxation techniques?",
+    "Sleep is crucial for memory – do you get enough rest? Need tips on balancing sleep and study?",
+    "A short walk can boost focus. Would you like advice on fitting in short exercises during study breaks?",
   ],
   examPrep: [
-    "Practice with mock tests to simulate exam conditions. It’ll help you manage time better.",
-    "Review past exams if available to get an idea of the format and typical questions.",
-    "Make a revision plan that covers all topics and stick to it. Consistency is key!",
-    "Use different colors and highlighters in your notes to organize information visually.",
-    "Explain concepts aloud to yourself or a friend. Teaching is a powerful learning tool.",
+    "Practice with mock tests to simulate exam conditions. Need more tips on practicing for exams?",
+    "Reviewing past exams helps get familiar with the format. Do you want advice on structuring your reviews?",
+    "Create a revision plan and stick to it. Need help breaking down topics into a plan?",
+    "Using color coding in notes can make a big difference. Want to know more about this technique?",
+    "Explaining concepts out loud can reinforce knowledge. Want tips on how to teach yourself?",
   ],
   timeManagement: [
-    "Use a planner to map out your deadlines and goals for each week or month.",
-    "Set aside a fixed time each day for studying, and stick to it as much as possible.",
-    "Avoid multitasking; focus on one task at a time to improve efficiency.",
-    "Prioritize tasks based on urgency and importance. Use a system like the Eisenhower Matrix.",
-    "Break your study time into blocks, with short breaks in between to stay productive.",
+    "A planner can help map out your goals. Need suggestions for creating an effective schedule?",
+    "Setting fixed times for study each day can help with discipline. Want tips on forming study habits?",
+    "Avoid multitasking; it can be counterproductive. Need help structuring your tasks?",
+    "Use the Eisenhower Matrix to prioritize tasks. Would you like to learn more about this method?",
+    "Break your study time into blocks with short breaks. Do you want to hear more about the Pomodoro technique?",
+  ],
+  studyPlan: [
+    "Let's create a study plan! What subject do you need to focus on?",
+    "How many hours per week can you dedicate to studying this subject?",
+    "What specific topics do you want to cover in this subject?",
   ],
   softFallback:
     "I'm sorry, I didn't quite understand that. Could you rephrase?",
@@ -146,15 +153,16 @@ const responses = {
 };
 
 function processUserMessage(msg) {
-  // Reset if hard fallback previously triggered
+  // Check for a hard fallback if misunderstandCount reaches 3
   if (conversationState.misunderstandCount >= 3) {
     conversationState.history = [];
     conversationState.misunderstandCount = 0;
     conversationState.lastIntent = null;
+    conversationState.studyPlanStep = 0;
     return responses.hardFallback;
   }
 
-  // Detect intent
+  // Determine the user's intent
   let intentDetected = null;
   for (let intent in intents) {
     if (
@@ -165,17 +173,32 @@ function processUserMessage(msg) {
     }
   }
 
-  // Generate response based on intent
-  if (intentDetected) {
-    conversationState.misunderstandCount = 0; // Reset misunderstand count
-    conversationState.lastIntent = intentDetected;
-    const responseList = responses[intentDetected];
-    const response =
-      responseList[Math.floor(Math.random() * responseList.length)];
-    conversationState.history.push({ user: msg, bot: response });
+  // Handle the study plan multi-step conversation
+  if (
+    intentDetected === "studyPlan" &&
+    conversationState.lastIntent !== "studyPlan"
+  ) {
+    // Starting the study plan flow
+    conversationState.lastIntent = "studyPlan";
+    conversationState.studyPlanStep = 1; // Set the first step
+    return responses.studyPlan[0];
+  } else if (conversationState.lastIntent === "studyPlan") {
+    // Continue study plan steps based on the current step
+    const response = responses.studyPlan[conversationState.studyPlanStep];
+    conversationState.studyPlanStep =
+      (conversationState.studyPlanStep + 1) % responses.studyPlan.length;
     return response;
+  }
+
+  // Reset misunderstand count if intent is detected
+  if (intentDetected) {
+    conversationState.misunderstandCount = 0;
+    conversationState.lastIntent = intentDetected;
+    return responses[intentDetected][
+      Math.floor(Math.random() * responses[intentDetected].length)
+    ];
   } else {
-    // No intent found, trigger soft fallback
+    // Increment misunderstand count and return soft fallback if intent not detected
     conversationState.misunderstandCount += 1;
     return responses.softFallback;
   }
