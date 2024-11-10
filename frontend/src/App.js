@@ -103,18 +103,6 @@ function App() {
     setShowStudyPlanner(!showStudyPlanner);
   };
 
-  // Notification badge for new study plan
-  const StudyPlanBadge = () => {
-    if (!showStudyPlanner && botStudyPlan) {
-      return (
-        <span className="notification-badge bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2">
-          New Plan
-        </span>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className={`app ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="topbar">
@@ -123,7 +111,6 @@ function App() {
         </Button>
         <Button onClick={toggleStudyPlanner} className="topbar-btn">
           {showStudyPlanner ? "Chat Bot" : "Study Plans"}
-          <StudyPlanBadge />
         </Button>
       </div>
 

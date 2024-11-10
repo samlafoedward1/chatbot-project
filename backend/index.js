@@ -148,7 +148,7 @@ const responses = {
   askSchedulePreference:
     "When do you prefer to study? (Morning, Afternoon, Evening)",
   confirmPlan:
-    "Great! Here's your personalized study plan for {subject}:\n{planSummary}\n You can see the schdeule in the Study plan tab. You're welcome!",
+    "Great! Here's your personalized study plan for {subject}:\n{planSummary}\n •You can see the schdeule in the Study plans tab. You're welcome!",
   softFallback: [
     "I didn't quite catch that. Could you rephrase?",
     "I'm not sure I understood. Could you say that differently?",
