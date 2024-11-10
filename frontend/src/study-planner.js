@@ -86,8 +86,8 @@ const StudyPlanner = ({ botStudyPlan }) => {
         <div className="mt-3">
           <h4 className="font-medium mb-2">Recommended Session Breakdown:</h4>
           <p>
-            {Math.round(activePlan.hoursPerWeek / 3)} hours per session,{" "}
-            {activePlan.schedule} times per week
+            {Math.round(activePlan.hoursPerWeek / 3)} hours per session, in the{" "}
+            {activePlan.schedule}s
           </p>
         </div>
       </div>
