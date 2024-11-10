@@ -1,13 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function StudyPlanner() {
+const StudyPlanner = ({ botStudyPlan }) => {
   const [studySessions, setStudySessions] = useState([]);
   const [subject, setSubject] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [notes, setNotes] = useState("");
+  const [activePlan, setActivePlan] = useState(null);
 
-  // Handle input changes for subject, date, time, and notes
+  // Handle bot study plan when received
+  useEffect(() => {
+    if (botStudyPlan) {
+      setActivePlan(botStudyPlan);
+      // Pre-fill the subject field with bot's subject
+      setSubject(botStudyPlan.subject || "");
+    }
+  }, [botStudyPlan]);
+
+  // Handle input changes
   const handleSubjectChange = (e) => setSubject(e.target.value);
   const handleDateChange = (e) => setDate(e.target.value);
   const handleTimeChange = (e) => setTime(e.target.value);
@@ -21,32 +31,77 @@ function StudyPlanner() {
         date,
         time,
         notes,
+        isFromBotPlan: !!activePlan,
       };
       setStudySessions([...studySessions, newSession]);
-      setSubject("");
       setDate("");
       setTime("");
       setNotes("");
     } else {
-      alert("Please fill in all fields");
+      alert("Please fill in all required fields");
     }
   };
 
-  // Function to render the study sessions
+  // Render study sessions
   const renderStudySessions = () => {
     return studySessions.map((session, index) => (
-      <div key={index} className="study-session">
+      <div
+        key={index}
+        className={`study-session ${
+          session.isFromBotPlan ? "bot-session" : ""
+        }`}
+      >
         <h3>{session.subject}</h3>
         <p>Date: {session.date}</p>
         <p>Time: {session.time}</p>
         <p>Notes: {session.notes || "No additional notes"}</p>
+        {session.isFromBotPlan && (
+          <span className="text-sm text-blue-600">Based on bot study plan</span>
+        )}
       </div>
     ));
+  };
+  // Render bot-generated study plan if available
+  const renderBotPlan = () => {
+    if (!activePlan) return null;
+
+    return (
+      <div className="bot-study-plan p-4 mb-4 bg-gray-50 rounded-lg">
+        <h3 className="text-xl font-semibold mb-3">Bot-Generated Study Plan</h3>
+        <div className="grid gap-2">
+          <p>
+            <strong>Subject:</strong> {activePlan.subject}
+          </p>
+          <p>
+            <strong>Weekly Hours:</strong> {activePlan.hoursPerWeek}
+          </p>
+          <p>
+            <strong>Topics:</strong> {activePlan.topics?.join(", ")}
+          </p>
+          <p>
+            <strong>Goals:</strong> {activePlan.goals}
+          </p>
+          <p>
+            <strong>Preferred Schedule:</strong> {activePlan.schedule}
+          </p>
+          <div className="mt-3">
+            <h4 className="font-medium mb-2">Recommended Session Breakdown:</h4>
+            <p>
+              {Math.round(activePlan.hoursPerWeek / 3)} hours per session,{" "}
+              {activePlan.schedule} times per week
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className="study-planner">
       <h2>Study Planner</h2>
+
+      {/* Display bot-generated plan if available */}
+      {renderBotPlan()}
 
       {/* Input fields to add a new study session */}
       <div className="study-planner-form">
@@ -86,6 +141,6 @@ function StudyPlanner() {
       </div>
     </div>
   );
-}
+};
 
 export default StudyPlanner;

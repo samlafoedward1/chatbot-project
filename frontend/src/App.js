@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import io from "socket.io-client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import StudyPlanner from "./study-planner"; // Import the StudyPlanner component
+import StudyPlanner from "./study-planner";
 
 // Socket connection
 const socket = io("http://localhost:3001");
@@ -13,7 +13,8 @@ function App() {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showStudyPlanner, setShowStudyPlanner] = useState(false); // New state to toggle study planner
+  const [showStudyPlanner, setShowStudyPlanner] = useState(false);
+  const [botStudyPlan, setBotStudyPlan] = useState(null);
   const chatEndRef = useRef(null);
 
   // Handle incoming bot messages
@@ -23,12 +24,54 @@ function App() {
         ...prevHistory,
         { sender: "bot", text: botMessage },
       ]);
+
+      // Check if the message contains a study plan
+      if (
+        typeof botMessage === "string" &&
+        botMessage.includes("📚 Study Plan Summary")
+      ) {
+        const planData = parseBotStudyPlan(botMessage);
+        setBotStudyPlan(planData);
+        // Optionally auto-switch to planner view when plan is received
+        // setShowStudyPlanner(true);
+      }
     });
 
     return () => socket.off("botMessage");
   }, []);
 
-  // Scroll to the latest message
+  // Parse bot study plan from message
+  const parseBotStudyPlan = (message) => {
+    const lines = message.split("\n");
+    return {
+      subject: lines
+        .find((l) => l.includes("Subject:"))
+        ?.split(":")[1]
+        ?.trim(),
+      hoursPerWeek: parseInt(
+        lines
+          .find((l) => l.includes("Weekly Hours:"))
+          ?.split(":")[1]
+          ?.trim()
+      ),
+      topics: lines
+        .find((l) => l.includes("Topics:"))
+        ?.split(":")[1]
+        ?.trim()
+        .split(",")
+        .map((t) => t.trim()),
+      goals: lines
+        .find((l) => l.includes("Goals:"))
+        ?.split(":")[1]
+        ?.trim(),
+      schedule: lines
+        .find((l) => l.includes("Preferred Schedule:"))
+        ?.split(":")[1]
+        ?.trim(),
+    };
+  };
+
+  // Scroll to latest message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory]);
@@ -45,7 +88,7 @@ function App() {
     }
   };
 
-  // Handle "Enter" key press
+  // Handle Enter key press
   const handleKeyPress = (e) => {
     if (e.key === "Enter") sendMessage();
   };
@@ -60,21 +103,32 @@ function App() {
     setShowStudyPlanner(!showStudyPlanner);
   };
 
+  // Notification badge for new study plan
+  const StudyPlanBadge = () => {
+    if (!showStudyPlanner && botStudyPlan) {
+      return (
+        <span className="notification-badge bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2">
+          New Plan
+        </span>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className={`app ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="topbar">
         <Button onClick={toggleDarkMode} className="topbar-btn">
           {isDarkMode ? <FaSun /> : <FaMoon />} Toggle Dark Mode
         </Button>
-        {/* Change button text based on study planner state */}
         <Button onClick={toggleStudyPlanner} className="topbar-btn">
-          {showStudyPlanner ? "Bot" : "Study Plans"}
+          {showStudyPlanner ? "Chat Bot" : "Study Plans"}
+          <StudyPlanBadge />
         </Button>
       </div>
 
       <div className="chat-container">
-        {/* Conditionally render chat or study planner */}
-        {!showStudyPlanner && (
+        {!showStudyPlanner ? (
           <div className="chat-window">
             <h1>Study Buddy Chatbot</h1>
             <div className="chat-history">
@@ -102,12 +156,9 @@ function App() {
               <button onClick={sendMessage}>Send</button>
             </div>
           </div>
-        )}
-
-        {/* Conditionally render the Study Planner */}
-        {showStudyPlanner && (
+        ) : (
           <div className="study-planner-container">
-            <StudyPlanner />
+            <StudyPlanner botStudyPlan={botStudyPlan} />
           </div>
         )}
       </div>
