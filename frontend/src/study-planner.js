@@ -12,7 +12,6 @@ const StudyPlanner = ({ botStudyPlan }) => {
   useEffect(() => {
     if (botStudyPlan) {
       setActivePlan(botStudyPlan);
-      // Pre-fill the subject field with bot's subject
       setSubject(botStudyPlan.subject || "");
     }
   }, [botStudyPlan]);
@@ -61,36 +60,35 @@ const StudyPlanner = ({ botStudyPlan }) => {
       </div>
     ));
   };
+
   // Render bot-generated study plan if available
   const renderBotPlan = () => {
     if (!activePlan) return null;
 
     return (
-      <div className="bot-study-plan p-4 mb-4 bg-gray-50 rounded-lg">
+      <div className="study-session bot-session p-4 mb-4 bg-gray-50 rounded-lg">
         <h3 className="text-xl font-semibold mb-3">Bot-Generated Study Plan</h3>
-        <div className="grid gap-2">
+        <p>
+          <strong>Subject:</strong> {activePlan.subject}
+        </p>
+        <p>
+          <strong>Weekly Hours:</strong> {activePlan.hoursPerWeek}
+        </p>
+        <p>
+          <strong>Topics:</strong> {activePlan.topics?.join(", ")}
+        </p>
+        <p>
+          <strong>Goals:</strong> {activePlan.goals}
+        </p>
+        <p>
+          <strong>Preferred Schedule:</strong> {activePlan.schedule}
+        </p>
+        <div className="mt-3">
+          <h4 className="font-medium mb-2">Recommended Session Breakdown:</h4>
           <p>
-            <strong>Subject:</strong> {activePlan.subject}
+            {Math.round(activePlan.hoursPerWeek / 3)} hours per session,{" "}
+            {activePlan.schedule} times per week
           </p>
-          <p>
-            <strong>Weekly Hours:</strong> {activePlan.hoursPerWeek}
-          </p>
-          <p>
-            <strong>Topics:</strong> {activePlan.topics?.join(", ")}
-          </p>
-          <p>
-            <strong>Goals:</strong> {activePlan.goals}
-          </p>
-          <p>
-            <strong>Preferred Schedule:</strong> {activePlan.schedule}
-          </p>
-          <div className="mt-3">
-            <h4 className="font-medium mb-2">Recommended Session Breakdown:</h4>
-            <p>
-              {Math.round(activePlan.hoursPerWeek / 3)} hours per session,{" "}
-              {activePlan.schedule} times per week
-            </p>
-          </div>
         </div>
       </div>
     );
@@ -99,9 +97,6 @@ const StudyPlanner = ({ botStudyPlan }) => {
   return (
     <div className="study-planner">
       <h2>Study Planner</h2>
-
-      {/* Display bot-generated plan if available */}
-      {renderBotPlan()}
 
       {/* Input fields to add a new study session */}
       <div className="study-planner-form">
@@ -137,6 +132,7 @@ const StudyPlanner = ({ botStudyPlan }) => {
       {/* Display the list of study sessions */}
       <div className="study-session-list">
         <h2>Upcoming Study Sessions</h2>
+        {renderBotPlan()}
         {renderStudySessions()}
       </div>
     </div>
