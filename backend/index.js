@@ -148,7 +148,7 @@ const responses = {
   askSchedulePreference:
     "When do you prefer to study? (Morning, Afternoon, Evening)",
   confirmPlan:
-    "Great! Here's your personalized study plan for {subject}:\n{planSummary}\nYou're welcome",
+    "Great! Here's your personalized study plan for {subject}:\n{planSummary}\n You can see the schdeule in the Study plan tab. You're welcome!",
   softFallback: [
     "I didn't quite catch that. Could you rephrase?",
     "I'm not sure I understood. Could you say that differently?",
@@ -175,7 +175,6 @@ const responses = {
 function createPlanSummary(plan) {
   return `
 📚 Study Plan Summary:
-───────────────────\n
 📋 Subject: ${plan.subject}\n
 ⏰ Weekly Hours: ${plan.hoursPerWeek}\n
 📑 Topics: ${plan.topics.join(", ")}\n
@@ -183,7 +182,6 @@ function createPlanSummary(plan) {
 📅 Preferred Schedule: ${plan.schedule}\n
 
 📋 Structured Breakdown:
-───────────────────\n
 1. Session Length: ${Math.round(plan.hoursPerWeek / 3)} hours per session\n
 2. Topic Progression: ${plan.topics.join(" → ")}\n
 3. Weekly Schedule: ${plan.schedule} sessions, ${Math.round(
@@ -191,7 +189,6 @@ function createPlanSummary(plan) {
   )} times per week
 
 💡 Recommendations:
-───────────────────\n
 • Take a 5-minute break every 25 minutes\n
 • Review previous topics before starting new ones\n
 • Use active recall techniques during study sessions \n
