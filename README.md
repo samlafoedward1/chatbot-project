@@ -8,6 +8,8 @@
 
 The Study Buddy Chatbot is your virtual study assistant, designed to help you plan study sessions, stay organized, and stay motivated. The chatbot enables users to generate study plans, schedule individual study sessions, and track progress effectively.
 
+The chatbot is available by online by: https://chatbot-frontend-agctftfhg6bbd0fv.germanywestcentral-01.azurewebsites.net/
+
 For installation, usage, and setup, please refer to the respective markdown files:
 
 - [Installation and setup Guide](setup.md)
