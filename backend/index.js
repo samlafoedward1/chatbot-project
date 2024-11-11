@@ -50,7 +50,6 @@ const intents = {
     "inspire",
     "encourage",
     "give up",
-    "tired",
     "goal",
     "achieve",
     "positive",
@@ -60,7 +59,7 @@ const intents = {
     "time",
     "efficient",
     "manage",
-    "procrastinate",
+    "procrastinating",
     "organize",
   ],
   wellness: [
@@ -71,7 +70,8 @@ const intents = {
     "mental health",
     "well-being",
     "rest",
-    "energy",
+    "energized",
+    "tired",
   ],
   examPrep: [
     "exam",
