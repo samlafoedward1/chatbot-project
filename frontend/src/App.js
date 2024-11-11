@@ -7,7 +7,9 @@ import "./App.css";
 import StudyPlanner from "./study-planner";
 
 // Socket connection
-const socket = io("http://localhost:3001");
+const socket = io(
+  "chatbot-backend-czemehh6dhf5g5b6.germanywestcentral-01.azurewebsites.net"
+);
 
 function App() {
   const [message, setMessage] = useState("");
