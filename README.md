@@ -1,9 +1,5 @@
 # chatbot-project
 
-# Edward Mawuko Samlafo-Adams
-
-# Matriculation Number: 22300580
-
 # Study Buddy Chatbot
 
 The Study Buddy Chatbot is your virtual study assistant, designed to help you plan study sessions, stay organized, and stay motivated. The chatbot enables users to generate study plans, schedule individual study sessions, and track progress effectively.
